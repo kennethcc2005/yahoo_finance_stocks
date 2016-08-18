@@ -21,6 +21,7 @@ for j in xrange(13):
 link_f = ''.join(f)
 link_f = link_f.replace(' ','')
 # u'aa2a5bb2b3b4b6cc1c3c6c8dd1d2ee1e7e8e9f6ghjkg1g3g4g5g6ii5j1j3j4j5j6k1'
+
 er_date = str(datelist[-1].date()).replace('-','')
 link = 'https://biz.yahoo.com/research/earncal/%s.html' %(er_date)
 
@@ -70,11 +71,11 @@ else:
 
 
 '''
-refactor code:
+refactor code: look for history er report
 '''
 datelist = pd.date_range(dt.date(1999,1,27), dt.date.today()).tolist()
 df = pd.DataFrame(columns = ['company_name','symbol','eps_estimate', 'time', 'er_date'])
-for df_date in datelist[:100]:
+for df_date in datelist[::-1]:
     er = str(df_date.date()).replace('-','')
     er_link = 'https://biz.yahoo.com/research/earncal/%s.html' %(er)
 #     er_link = 'https://biz.yahoo.com/research/earncal/20161026.html'
@@ -94,7 +95,7 @@ for df_date in datelist[:100]:
             if len(symbol.findAll('td')) == 3:
                 symbol_data = [info.text.replace('\n', ' ') for info in symbol.findAll('td')]
             else:
-                symbol_data = [info.text for info in symbol.findAll('td')[:-1]]
+                symbol_data = [info.text for info in symbol.findAll('td')[:4]]
             symbol_data.append(er_date)
             data.append(symbol_data)
         data = np.array(data)
@@ -106,5 +107,6 @@ for df_date in datelist[:100]:
             df_temp = pd.DataFrame(data = data, columns = ['company_name','symbol','eps_estimate', 'time', 'er_date'])
             df = df.append(df_temp)
     except:
-        print df_date, 'not a good date'
+        print er_link, 'not a good date'
 df = df.reset_index(drop=True)
+df.to_pickle('rev_full_history_er_date.pkl')

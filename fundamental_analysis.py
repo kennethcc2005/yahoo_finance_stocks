@@ -16,9 +16,9 @@ dividends = None
 Google is smart to detect which market for the symbols...Default to nasdaq
 '''
 market = 'NASDAQ'
-df1 = pd.read_csv('/home/ubuntu/yahoo_finance_stock/companylist.csv')
-df2 = pd.read_csv('/home/ubuntu/yahoo_finance_stock/companylist1.csv')
-df3 = pd.read_csv('/home/ubuntu/yahoo_finance_stock/companylist2.csv')
+df1 = pd.read_csv('companylist.csv')
+df2 = pd.read_csv('companylist1.csv')
+df3 = pd.read_csv('companylist2.csv')
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)
 google_finance = GF(market, 'AAPL')
@@ -91,16 +91,16 @@ for symbol in symbols:
             df_cf_q.ix[idx] = row
         count_ += 1
         if count_ % 10 == 0:
-            time.sleep(6)
-            print count_ 
+            time.sleep(1)
+            print count_
     except:
         print symbol, ' not in google finance.'
 
 # today = str(date.today)
 # print str(date.today)+'_'+'balance_sheet_annual.pkl'
-df_bs_a.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'balance_sheet_annual.pkl')
-df_bs_q.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'balance_sheet_quarter.pkl')
-df_is_a.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'income_statement_annual.pkl')
-df_is_q.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'income_statement_quarter.pkl')
-df_cf_a.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'cash_flow_annual.pkl')
-df_cf_q.to_pickle('/home/ubuntu/yahoo_finance_stock/' + str(date.today())+'_'+'cash_flow_quarter.pkl')
+df_bs_a.to_pickle(str(date.today())+'_'+'balance_sheet_annual.pkl')
+df_bs_q.to_pickle(str(date.today())+'_'+'balance_sheet_quarter.pkl')
+df_is_a.to_pickle(str(date.today())+'_'+'income_statement_annual.pkl')
+df_is_q.to_pickle(str(date.today())+'_'+'income_statement_quarter.pkl')
+df_cf_a.to_pickle(str(date.today())+'_'+'cash_flow_annual.pkl')
+df_cf_q.to_pickle(str(date.today())+'_'+'cash_flow_quarter.pkl')
