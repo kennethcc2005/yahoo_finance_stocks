@@ -87,6 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.DS_Store
 
 #Ignore all the data
-data/
+#data/
