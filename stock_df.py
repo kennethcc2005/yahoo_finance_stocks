@@ -20,9 +20,9 @@ for j in xrange(29):
 link_f = ''.join(f)
 link_f = link_f.replace(' ','')
 #u'aa2a5bb2b3b4b6cc1c3c6c8dd1d2ee1e7e8e9f6ghjkg1g3g4g5g6ii5j1j3j4j5j6k1k2k3k4k5ll1l2l3mm2m3m4m5m6m7m8nn4opp1p2p5p6qrr1r2r5r6r7ss1s7t1t6t7t8vv1v7ww1w4xy'
-df1 = pd.read_csv('companylist.csv')
-df2 = pd.read_csv('companylist1.csv')
-df3 = pd.read_csv('companylist2.csv')
+df1 = pd.read_csv('data/companylist.csv')
+df2 = pd.read_csv('data/companylist1.csv')
+df3 = pd.read_csv('data/companylist2.csv')
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)
 stock_list = []
@@ -39,7 +39,7 @@ for n in name:
     n = n.encode('ascii', 'ignore').strip()
     new_name.append(n)
 df_stock.columns = new_name
-csv_name = date + '_all_stocks_info.pkl'
+csv_name = 'data' + date + '_all_stocks_info.pkl'
 df_stocks.to_pickle(csv_name)
 
 

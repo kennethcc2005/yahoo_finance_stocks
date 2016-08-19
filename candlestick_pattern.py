@@ -6,9 +6,9 @@ from datetime import date, datetime, timedelta
 from collections import defaultdict
 start = datetime(2010, 1, 1)
 end = date.today()
-df1 = pd.read_csv('companylist.csv')
-df2 = pd.read_csv('companylist1.csv')
-df3 = pd.read_csv('companylist2.csv')
+df1 = pd.read_csv('data/companylist.csv')
+df2 = pd.read_csv('data/companylist1.csv')
+df3 = pd.read_csv('data/companylist2.csv')
 data = web.DataReader("F", 'yahoo', start, end)
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)

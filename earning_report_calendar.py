@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np 
 import datetime as dt
 
-current_df = pd.read_pickle('current_er_calendar.pkl')
+current_df = pd.read_pickle('data/current_er_calendar.pkl')
 datelist = pd.date_range(dt.date.today(), dt.date.today() + dt.timedelta(days=60)).tolist()
 df = pd.DataFrame(columns = ['company_name','symbol','eps_estimate', 'time', 'er_date'])
 for df_date in datelist:
@@ -40,4 +40,4 @@ for df_date in datelist:
 df.set_index('symbol', inplace= True)
 results = current_df.combine_first(df)
 results.update(df)
-results.to_pickle('current_er_calendar.pkl')
+results.to_pickle('data/current_er_calendar.pkl')

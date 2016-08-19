@@ -109,4 +109,4 @@ for df_date in datelist[::-1]:
     except:
         print er_link, 'not a good date'
 df = df.reset_index(drop=True)
-df.to_pickle('rev_full_history_er_date.pkl')
+df.to_pickle('data/rev_full_history_er_date.pkl')

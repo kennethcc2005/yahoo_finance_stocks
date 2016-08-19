@@ -7,9 +7,9 @@ from collections import defaultdict
 start = datetime(2010, 1, 1)
 end = date.today()
 # f = web.DataReader("F", 'yahoo', start, end)
-df1 = pd.read_csv('companylist.csv')
-df2 = pd.read_csv('companylist1.csv')
-df3 = pd.read_csv('companylist2.csv')
+df1 = pd.read_csv('data/companylist.csv')
+df2 = pd.read_csv('data/companylist1.csv')
+df3 = pd.read_csv('data/companylist2.csv')
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)
 td_seq = defaultdict()
@@ -87,8 +87,8 @@ for symbol in symbols:
     except:
         print symbol, ' not in yahoo finance.'
 print alert_list
-alert_file_name = 'yahoo_finance_stock/' + str(end) +'_alert_list'
-td_seq_file_name = 'yahoo_finance_stock/' + str(end) +'_td_seq_list'
+alert_file_name = 'data/' + str(end) +'_alert_list'
+td_seq_file_name = 'data/' + str(end) +'_td_seq_list'
 with open(alert_file_name, 'w') as f:
     json.dump(alert_list, f)
 with open(td_seq_file_name, 'w') as f:
