@@ -3,7 +3,7 @@ import numpy as np
 import datetime as dt
 import pandas.io.data as web
 from decimal import Decimal
-
+from td_sequence import TDSequence
 '''
 Sample data from 2016-07-25, name may changes as date changes
 Using AAPL as test
@@ -74,7 +74,10 @@ for i in xrange(len(earning_report)):
     extra_shares_outstanding = symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] - symbol_balance_sheet_prevQ2['Total Common Shares Outstanding']
 
     '''td_sequential'''
-
+    end_date = earning_report['adj_er_date'][i]
+    data = web.DataReader(symbol, 'yahoo', start, end_date)
+    td = TDSequence(data)
+    td_sequence = td.sequence()
     '''candle_stick'''
 # Below are for futrue test data...not useful for training with lack of data
 # symbol_detail = df_stock_detail[df_stock_detail['Symbol'] == symbol]
