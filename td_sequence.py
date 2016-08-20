@@ -5,7 +5,7 @@ import pandas.io.data as web
 from datetime import date, datetime, timedelta
 from collections import defaultdict
 
-class td_sequence(object):
+class TDSequence(object):
     def __init__(self, data):
         self.data = data
 
