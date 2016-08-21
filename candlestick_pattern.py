@@ -12,6 +12,8 @@ df3 = pd.read_csv('data/companylist2.csv')
 data = web.DataReader("F", 'yahoo', start, end)
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)
+symbol = 'AAPL'
+c = web.DataReader(symbol, 'yahoo', start, end)
 
 def doji(data_pt):
     if float(max(data_pt['Close'], data_pt['Open']))/float(min(data_pt['Close'], data_pt['Open'])) < 1.001:
@@ -885,7 +887,7 @@ def falling_three_methods(data):
     '''
     a = down_price_trend(data.iloc[-5], data.iloc[-6], data.iloc[-8])
     b = tall_black_candle(data.iloc[-5])
-    c = small_white_candle(data_pt.iloc[-4]) and small_white_candle(data_pt.iloc[-2]) and (small_black_candle(data_pt.iloc[-3]) or small_white_candle(data_pt.iloc[-3]))
+    c = small_white_candle(data.iloc[-4]) and small_white_candle(data.iloc[-2]) and (small_black_candle(data.iloc[-3]) or small_white_candle(data.iloc[-3]))
     d = tall_black_candle(data.iloc[-1]) and (data.iloc[-1]['Close'] < data.iloc[-5]['Close'])
     e = (data.iloc[-4]['High'] <  data.iloc[-5]['High']) and (data.iloc[-3]['High'] <  data.iloc[-5]['High']) and (data.iloc[-2]['High'] <  data.iloc[-5]['High'])
     f = (data.iloc[-4]['Low'] >  data.iloc[-5]['Low']) and (data.iloc[-3]['Low'] >  data.iloc[-5]['Low']) and (data.iloc[-2]['Low'] >  data.iloc[-5]['Low'])
@@ -1484,7 +1486,6 @@ def upside_tasuki_gap(data):
         return True
     else:
         return False   
-
 
 
 
