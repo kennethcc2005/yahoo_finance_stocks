@@ -800,11 +800,7 @@ class candle(object):
         a = self.down_price_trend(self.data.iloc[-4], self.data.iloc[-5], self.data.iloc[-7])
         b = (self.tall_black_candle(self.data.iloc[-4])) and (self.black_marubozu_candle(self.data.iloc[-4]))
         c = (self.tall_black_candle(self.data.iloc[-3])) and (self.black_marubozu_candle(self.data.iloc[-3]))
-<<<<<<< HEAD
         d = self.black_candle(self.data.iloc[-2]) and ((self.data.iloc[-2]['High'] - self.data.iloc[-2]['Open']) > self.body_candle(self.data.iloc[-2]))
-=======
-        d = self.black_candle(self.data.iloc[-2]) and ((self.data.iloc[-2]['High'] - self.data.iloc[-2]['Open']) > body_candle(self.data.iloc[-2]))
->>>>>>> d18a15d5555890538e78b95b56a739c6fb658d2c
         e = (self.data.iloc[-2]['Open'] < self.data.iloc[-3]['Close']) and (self.data.iloc[-2]['High'] > self.data.iloc[-3]['Close'])
         f = (self.data.iloc[-1]['High'] < self.data.iloc[-2]['Open']) and (self.data.iloc[-1]['Low'] > self.data.iloc[-2]['Close'])
         if a and b and c and d and e and f:

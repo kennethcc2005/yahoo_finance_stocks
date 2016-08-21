@@ -4,7 +4,7 @@ import datetime as dt
 import pandas.io.data as web
 from decimal import Decimal
 from td_sequence import TDSequence
-
+from candle_output import candle
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestRegressor as rfr
 from sklearn.linear_model import LinearRegression
@@ -111,33 +111,20 @@ for symbol in symbols:
             symbol_balance_sheet_prevQ2 = symbol_balance_sheet_prevQ2.fillna(0)
             symbol_income_statement_prevQ1 = symbol_income_statement_q.iloc[i+1]
             symbol_income_statement_prevQ1 = symbol_income_statement_prevQ1.fillna(0)
+
             '''fundamental details'''
-            if symbol_cash_flow_prevQ1['Capital Expenditures'] == None:
-                cap_expense_q1 = 0
-            else:
-                cap_expense_q1 = symbol_cash_flow_prevQ1['Capital Expenditures']
-            if symbol_cash_flow_prevQ2['Capital Expenditures'] == None:
-                cap_expense_q2 = 0
-            else:
-                cap_expense_q2 = symbol_cash_flow_prevQ2['Capital Expenditures']  
+            cap_expense_q1 = symbol_cash_flow_prevQ1['Capital Expenditures']
+            cap_expense_q2 = symbol_cash_flow_prevQ2['Capital Expenditures']  
             preferred_stock = Decimal(0 if symbol_balance_sheet_prevQ1['Redeemable Preferred Stock, Total'] == None else symbol_balance_sheet_prevQ1['Redeemable Preferred Stock, Total']) \
                                 + Decimal(0 if symbol_balance_sheet_prevQ1['Preferred Stock - Non Redeemable, Net'] == None else symbol_balance_sheet_prevQ1['Preferred Stock - Non Redeemable, Net']) 
             free_cash_flow = (symbol_cash_flow_prevQ1['Cash from Operating Activities'] + cap_expense_q1)
-            if symbol_income_statement_prevQ1['Total Revenue'] == None:
-                total_revenue = 0
-            else:
-                total_revenue = symbol_income_statement_prevQ1['Total Revenue'] 
+            total_revenue = symbol_income_statement_prevQ1['Total Revenue'] 
             net_income = symbol_income_statement_prevQ1['Net Income']
             debt = symbol_balance_sheet_prevQ1['Total Long Term Debt']
-            if debt == None:
-                debt = 0
             if symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] == 0:
                 symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] = 1
-            if symbol_balance_sheet_prevQ1['Total Equity'] == None:
-                symbol_balance_sheet_prevQ1['Total Equity'] = 0
             equity = symbol_balance_sheet_prevQ1['Total Equity']
             book_value = (symbol_balance_sheet_prevQ1['Total Equity'] - preferred_stock ) / symbol_balance_sheet_prevQ1['Total Common Shares Outstanding']
-
 
             '''value investing'''
             price_to_book_value_q = price/book_value
@@ -150,15 +137,8 @@ for symbol in symbols:
             else:
                 price_to_earnings_q = price / symbol_income_statement_prevQ1['Diluted Normalized EPS']
             price_to_sales_q = total_revenue / symbol_balance_sheet_prevQ1['Total Common Shares Outstanding']
-            if symbol_income_statement_prevQ1['Dividends per Share - Common Stock Primary Issue'] == None:
-                dividends = 0
-            else:
-                dividends = symbol_income_statement_prevQ1['Dividends per Share - Common Stock Primary Issue']
-            if symbol_balance_sheet_prevQ1['Long Term Debt'] == None:
-                long_term_debt_quarter  = 0
-            else:
-                long_term_debt_quarter = symbol_balance_sheet_prevQ1['Long Term Debt']
-
+            dividends = symbol_income_statement_prevQ1['Dividends per Share - Common Stock Primary Issue']
+            long_term_debt_quarter = symbol_balance_sheet_prevQ1['Long Term Debt']
             if max(symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'],symbol_balance_sheet_prevQ2['Total Common Shares Outstanding']) / min(symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'], symbol_balance_sheet_prevQ2['Total Common Shares Outstanding']) >= 2:
                 capital_spending_diff = cap_expense_q1/symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] - cap_expense_q2/symbol_balance_sheet_prevQ1['Total Common Shares Outstanding']
             else:
@@ -175,7 +155,8 @@ for symbol in symbols:
             td_sequence = td.sequence()
 
             '''candle_stick'''
-
+            c = candle(data)
+            candle_sticks = c.output()
             '''sample df'''
             df.loc[j] = [current_price, price_to_book_value_q,price_to_free_cash_flow_q,price_to_earnings_q,price_to_sales_q,\
                         dividends, long_term_debt_quarter, capital_spending_diff, market_cap, return_on_total_capital, return_on_shareholders_equity,\
