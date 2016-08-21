@@ -12,14 +12,12 @@ df3 = pd.read_csv('data/companylist2.csv')
 data = web.DataReader("F", 'yahoo', start, end)
 symbols = np.append(df1.Symbol.values, df2.Symbol.values)
 symbols = np.append(symbols, df3.Symbol.values)
-symbol = 'AAPL'
-c = web.DataReader(symbol, 'yahoo', start, end)
+
 class candle(object):
     def __init__(self,data):
         self.data=data
     def output(self):
           out_df=pd.DataFrame(index=[0])
-          print self.eight_new_price()
           out_df['a_new_price']=self.eight_new_price()
           out_df['eight_new_price']=self.eight_new_price()
           out_df['ten_new_price']=self.ten_new_price()
@@ -802,7 +800,11 @@ class candle(object):
         a = self.down_price_trend(self.data.iloc[-4], self.data.iloc[-5], self.data.iloc[-7])
         b = (self.tall_black_candle(self.data.iloc[-4])) and (self.black_marubozu_candle(self.data.iloc[-4]))
         c = (self.tall_black_candle(self.data.iloc[-3])) and (self.black_marubozu_candle(self.data.iloc[-3]))
+<<<<<<< HEAD
         d = self.black_candle(self.data.iloc[-2]) and ((self.data.iloc[-2]['High'] - self.data.iloc[-2]['Open']) > self.body_candle(self.data.iloc[-2]))
+=======
+        d = self.black_candle(self.data.iloc[-2]) and ((self.data.iloc[-2]['High'] - self.data.iloc[-2]['Open']) > body_candle(self.data.iloc[-2]))
+>>>>>>> d18a15d5555890538e78b95b56a739c6fb658d2c
         e = (self.data.iloc[-2]['Open'] < self.data.iloc[-3]['Close']) and (self.data.iloc[-2]['High'] > self.data.iloc[-3]['Close'])
         f = (self.data.iloc[-1]['High'] < self.data.iloc[-2]['Open']) and (self.data.iloc[-1]['Low'] > self.data.iloc[-2]['Close'])
         if a and b and c and d and e and f:
@@ -1584,7 +1586,3 @@ class candle(object):
             return True
         else:
             return False
-
-a = candle(c)
-
-print a.output()
