@@ -102,11 +102,15 @@ for symbol in symbols:
             next_close_price = c.loc[new_date]['Close']
 
             symbol_cash_flow_prevQ1 = symbol_cash_flow_q.iloc[i+1]
+            symbol_cash_flow_prevQ1 = symbol_cash_flow_prevQ1.fillna(0)
             symbol_cash_flow_prevQ2 = symbol_cash_flow_q.iloc[i+2]
+            symbol_cash_flow_prevQ2 = symbol_cash_flow_prevQ2.fillna(0)
             symbol_balance_sheet_prevQ1 = symbol_balance_sheet_q.iloc[i+1]
+            symbol_balance_sheet_prevQ1 = symbol_balance_sheet_prevQ1.fillna(0)
             symbol_balance_sheet_prevQ2 = symbol_balance_sheet_q.iloc[i+2]
+            symbol_balance_sheet_prevQ2 = symbol_balance_sheet_prevQ2.fillna(0)
             symbol_income_statement_prevQ1 = symbol_income_statement_q.iloc[i+1]
-
+            symbol_income_statement_prevQ1 = symbol_income_statement_prevQ1.fillna(0)
             '''fundamental details'''
             if symbol_cash_flow_prevQ1['Capital Expenditures'] == None:
                 cap_expense_q1 = 0
@@ -118,7 +122,6 @@ for symbol in symbols:
                 cap_expense_q2 = symbol_cash_flow_prevQ2['Capital Expenditures']  
             preferred_stock = Decimal(0 if symbol_balance_sheet_prevQ1['Redeemable Preferred Stock, Total'] == None else symbol_balance_sheet_prevQ1['Redeemable Preferred Stock, Total']) \
                                 + Decimal(0 if symbol_balance_sheet_prevQ1['Preferred Stock - Non Redeemable, Net'] == None else symbol_balance_sheet_prevQ1['Preferred Stock - Non Redeemable, Net']) 
-            book_value = (symbol_balance_sheet_prevQ1['Total Equity'] - preferred_stock ) / symbol_balance_sheet_prevQ1['Total Common Shares Outstanding']
             free_cash_flow = (symbol_cash_flow_prevQ1['Cash from Operating Activities'] + cap_expense_q1)
             if symbol_income_statement_prevQ1['Total Revenue'] == None:
                 total_revenue = 0
@@ -128,11 +131,12 @@ for symbol in symbols:
             debt = symbol_balance_sheet_prevQ1['Total Long Term Debt']
             if debt == None:
                 debt = 0
-            if symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] == None:
+            if symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] == 0:
                 symbol_balance_sheet_prevQ1['Total Common Shares Outstanding'] = 1
             if symbol_balance_sheet_prevQ1['Total Equity'] == None:
                 symbol_balance_sheet_prevQ1['Total Equity'] = 0
             equity = symbol_balance_sheet_prevQ1['Total Equity']
+            book_value = (symbol_balance_sheet_prevQ1['Total Equity'] - preferred_stock ) / symbol_balance_sheet_prevQ1['Total Common Shares Outstanding']
 
 
             '''value investing'''
