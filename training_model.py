@@ -44,9 +44,42 @@ new_col_names = []
 for i in df_stock_detail.columns.values:
     new_col_names.append(i.strip())
 df_stock_detail.columns = new_col_names
+candle_cols = ['a_new_price', 'eight_new_price', 'ten_new_price',
+       'twelve_new_price', 'thirteen_new_price', 'bearish_abandoned_baby',
+       'bullish_abandoned_baby', 'above_stomach', 'advance_block',
+       'below_stomach', 'bearish_belt_hold', 'bearish_breakaway',
+       'bearish_doji_star', 'bearish_engulfing', 'bearish_harami',
+       'bearish_harami_cross', 'bearish_kicking', 'bearish_meeting_lines',
+       'bearish_separating_lines', 'bearish_side_by_side_white_lines',
+       'bearish_three_line_strike', 'bearish_tri_star',
+       'bullish_belt_hold', 'bullish_breakaway', 'bullish_doji_star',
+       'bullish_engulfing', 'bullish_harami', 'bullish_harami_cross',
+       'bullish_kicking', 'bullish_meeting_lines',
+       'bullish_separating_lines', 'bullish_side_by_side_white_lines',
+       'bullish_three_line_strike', 'bullish_tri_star',
+       'collapsing_doji_star', 'conceling_baby_swallow',
+       'dark_cloud_cover', 'deliberation', 'gapping_down_doji',
+       'gapping_up_doji', 'northern_doji', 'southern_doji', 'evening_doji',
+       'downside_gap_three_methods', 'downside_tasuki_gap',
+       'falling_three_methods', 'falling_window', 'hammer',
+       'inverted_hammer', 'hanging_man', 'high_wave', 'homing_pigeon',
+       'identical_three_crows', 'in_neck', 'ladder_bottom',
+       'last_engulfing_bottom', 'last_engulfing_top', 'matching_low',
+       'mat_hold', 'morning_doji_star', 'morning_star', 'on_neck',
+       'piercing_pattern', 'rickshaw_man', 'rising_three_methods',
+       'rising_window', 'shooting_star_1', 'shooting_star_2',
+       'stick_sandwich', 'takuri_line', 'three_black_crows',
+       'three_inside_down', 'three_inside_up', 'three_outside_down',
+       'three_outside_up', 'three_stars_in_south', 'three_white_soldiers',
+       'thrusting', 'tweezers_bottom', 'tweezers_top', 'two_black_gapping',
+       'two_crows', 'unique_three_river_bottom',
+       'upside_gap_three_methods', 'upside_gap_two_crows',
+       'upside_tasuki_gap']
+fundamental_cols = ['price_to_book_value_q','price_to_free_cash_flow_q','price_to_earnings_q', 'price_to_sales_q', 'dividends', 'long_term_debt_quarter', \
+                        'capital_spending_diff', 'market_cap', 'return_on_total_capital', 'return_on_shareholders_equity', 'extra_shares_outstanding', 'td_sequence' ]
+columns = fundamental_cols + candle_cols
+df = pd.DataFrame(columns = columns)
 
-df = pd.DataFrame(columns = ['current_price','price_to_book_value_q','price_to_free_cash_flow_q','price_to_earnings_q', 'price_to_sales_q', 'dividends', 'long_term_debt_quarter', \
-                        'capital_spending_diff', 'market_cap', 'return_on_total_capital', 'return_on_shareholders_equity', 'extra_shares_outstanding', 'td_sequence' ])
 j = 0
 y =[]
 for symbol in symbols:
@@ -155,14 +188,18 @@ for symbol in symbols:
             td_sequence = td.sequence()
 
             '''candle_stick'''
-            c = candle(data)
-            candle_sticks = c.output()
+            can = candle(data)
+            candle_sticks = can.output()
+            candle_list = candle_sticks.loc[0].values
+            
             '''sample df'''
-            df.loc[j] = [current_price, price_to_book_value_q,price_to_free_cash_flow_q,price_to_earnings_q,price_to_sales_q,\
+            df_values = [price_to_book_value_q,price_to_free_cash_flow_q,price_to_earnings_q,price_to_sales_q,\
                         dividends, long_term_debt_quarter, capital_spending_diff, market_cap, return_on_total_capital, return_on_shareholders_equity,\
                         extra_shares_outstanding, td_sequence]
+            df_values.extend(candle_list)
+            df.loc[j] = df_values
             j += 1
-            y.append(next_close_price)
+            y.append((float(next_close_price) - float(current_price))/float(current_price))
     except IOError:
         print symbol
 X = df.values
