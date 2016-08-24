@@ -18,15 +18,15 @@ current_er_date = date.today() - timedelta(days = 10)
 symbol = 'AAPL'
 class tech_analysis(object):
     def __init__(self,symbol, prev_er_date, current_er_date):
-        self.data = web.DataReader(symbol, 'yahoo', prev_er_date, current_er_date)
-        self.prev_er_date = prev_er_date
+        self.data = web.DataReader(symbol, 'yahoo', prev_er_date + timedelta(days = 1), current_er_date)
+        self.prev_er_date = prev_er_date + timedelta(days = 1)
         self.current_er_date = current_er_date
 
     def on_balance_volume(self):
         '''start_date is the date after the previous earning report and 
         end_date is the date before earning report'''
         data = web.DataReader("AAPL", 'yahoo', self.prev_er_date, self.current_er_date)
-        df = data.iloc[1:-1]
+        df = data
         # start_date = self.prev_er_date + timedelta(days = 1)
         # end_date = self.current_er_date - timedelta(days = 1)
         # a = self.data.loc[start_date]
@@ -105,21 +105,125 @@ class tech_analysis(object):
     def aroon_indicator(self, days_high = 25):
         '''
         days_high = 25
+        The Aroon osciallatro is a technical indicator used to measure if a security is in a trend, 
+        and the magnitude of that trend. The indicator can also be used to identify when a new trend is set to begin. 
+        The indicator is comprised of two lines: an Aroon-up line and an Aroon-down line. 
+        A security is considered to be in an uptrend when the Aroon-up line is above 70, along with being above the Aroon-down line. 
+        The security is in a downtrend when the Aroon-down line is above 70 and also above the Aroon-up line.
         '''
         data_len = self.data.shape[0]
-        prev_high_ix = np.argmax(self.data['High'][:days_high])
+        prev_high_ix = np.argmax(self.data['High'][:days_high+1])
         prev_high = max(self.data['High'][:days_high])
+        prev_low_ix = np.argmin(self.data['Low'][:days_high+1])
+        prev_low = min(self.data['Low'][:days_high])
+        aroon_ups = []
+        aroon_downs = []
         for i in xrange(days_high, data_len):
-            current_high_ix =  np.argmax(self.data['High'][:days_high])
             if (self.data['High'][i] > prev_high) :
                 prev_high_ix = i
                 prev_high = self.data['High'][i]
-            elif i - prev_high_ix >= 25:
-                prev_high_ix += np.argmax(self.data['High'][i-24:i+1]) 
-                prev_high = max(self.data['High'][i-24:i+1])
+            elif i - prev_high_ix > days_high:
+                prev_high_ix += np.argmax(self.data['High'][i-days_high:i+1]) 
+                prev_high = max(self.data['High'][i-days_high:i+1])
+            if (self.data['Low'][i] < prev_low):
+                prev_low_ix = i
+                prev_low = self.data['Low'][i]
+            elif i - prev_low_ix > days_high:
+                prev_low_ix += np.argmin(self.data['Low'][i-days_high:i+1]) 
+                prev_low = min(self.data['Low'][i-days_high:i+1])
+            aroon_up = ((days_high - (i-prev_high_ix))/float(days_high))*100
+            aroon_down = ((days_high - (i-prev_low_ix))/float(days_high))*100
+            aroon_ups.append(aroon_up)
+            aroon_downs.append(aroon_down)
+        return aroon_ups, aroon_downs
 
-            aroon_up = ((days_high - (i-prev_high_ix))/25.)*100
-            aroon_down = 
+    def MACD(self, EMA1_ = 12, EMA2_ = 26):
+        '''
+        Moving average convergence divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of prices. 
+        The MACD is calculated by subtracting the 26-day exponential moving average (EMA) from the 12-day EMA. 
+        A nine-day EMA of the MACD, called the "signal line", is then plotted on top of the MACD, functioning as a trigger for buy and sell signals.
+        '''
+        EMA1 = self.EMA_(period = EMA1_)
+        EMA2 = self.EMA_(period = EMA2_)
+        MACDs = []
+        for i in xrange(len(EMA2)):
+            MACD = EMA1[EMA2_ - EMA1_ + i] - EMA2[i]
+            MACDs.append(MACD)
+        signals = self.EMA_(period = 9, data = MACDs)
+        return MACDs, signals
+
+    def EMA_(self,period = 10, data = self.data['Close']):
+        SMA = sum(data[:period])/float(period)
+        mult = (2 / float(period + 1) )
+        EMA = SMA
+        EMAs = [EMA]
+        for i in xrange(period+1, len(data['Close'])+1):
+            SMA = sum(data['Close'][i-period:i])/float(period)
+            EMA = (data['Close'][i-1] - EMA) * mult + EMA
+            EMAs.append(EMA)
+        return EMAs
+
+    def SMA_(self,period = 10, data =self.data['Close']):
+        SMAs = []
+        for i in xrange(period, len(data)):
+            SMA = sum(data[i-period:i])/float(period)
+            SMAs.append(SMA)
+        return SMAs
+
+    def RSI(self,period = 14):
+        '''
+        Relative Strength Index (RSI) is an extremely popular momentum indicator that has been featured in a number of articles, 
+        interviews and books over the years. In particular, Constance Brown's book, 
+        Technical Analysis for the Trading Professional, features the concept of bull market and bear market ranges for RSI. 
+        Andrew Cardwell, Brown's RSI mentor, introduced positive and negative reversals for RSI. 
+        In addition, Cardwell turned the notion of divergence, literally and figuratively, on its head.
+        '''
+        gains = []
+        losses = []
+        avg_gains = []
+        avg_losses = []
+        RSs = []
+        RSIs = []
+        for i in xrange(1,len(self.data.shape[0])):
+            change = self.data['Close'][i] - self.data['Close'][i-1]
+            if change < 0:
+                losses.append(abs(change))
+                gains.append(0)
+            else:
+                gains.append(change)
+                losses.append(0)
+            if i >= period:
+                avg_gain = np.mean(gains[i-period+1:])
+                avg_loss = np.mean(losses[i-period+1:])
+                RS = avg_gain / avg_loss if avg_loss != 0 else 99999
+                RSI = 0 if avg_loss == 0 else 100 - (100/(1+RS))
+                RSs.append(RS)
+                RSIs.append(RSI)
+                avg_gains.append(avg_gain)
+                avg_losses.append(avg_loss)
+        return RSs,RSIs
+
+    def stochastic_oscillator(self,period = 14):
+        '''
+
+        K = (Current Close - Lowest Low)/(Highest High - Lowest Low) * 100
+        D = 3-day SMA of K
+
+        Lowest Low = lowest low for the look-back period
+        Highest High = highest high for the look-back period
+        K is multiplied by 100 to move the decimal point two places
+        '''
+        stochastic_oscillators = []
+        for i in xrange(period,len(self.data.shape[0])+1):
+            high = max(slef.data['High'][i - 14, i])
+            low = min(slef.data['Low'][i - 14, i])
+            current_close = slef.data['Close'][i-1]
+            sc = (current_close-low)/(high-low)*100
+            stochastic_oscillators.append(sc)
+
+        D = self.SMA_(period = 3, data = stochastic_oscillators)
+        return stochastic_oscillators, D
+
 a = tech_analysis(symbol,prev_er_date, current_er_date)
 # print a.on_balance_volume()
 print a.accumulation_distribution_line()
