@@ -61,6 +61,65 @@ class tech_analysis(object):
         prev_ADL = 0
         return money_flow_multiplier_day, money_flow_multiplier_week, money_flow_multiplier_biweek, money_flow_multiplier_quarter
 
+    def avg_true_range(self):
+        '''
+        Typically, the Average True Range (ATR) is based on 14 periods and 
+        can be calculated on an intraday, daily, weekly or monthly basis. 
+        For this example, the ATR will be based on daily data. 
+        Because there must be a beginning, the first TR value is simply the High minus the Low, 
+        and the first 14-day ATR is the average of the daily TR values for the last 14 days. 
+        After that, Wilder sought to smooth the data by incorporating the previous period's ATR value.
+        '''
+        data_len = self.data.shape[0]
+        self.data.iloc[-15]['High'], self.data.iloc[-15]['Low'], self.data.iloc[-15]['Close']
+        TRs = []
+        pos_DMs = []
+        neg_DMs = []
+        DXs = []
+        for i in xrange(1,data_len):
+            high = self.data.iloc[i]['High']
+            low = self.data.iloc[i]['Low']
+            prev_high = self.data.iloc[i-1]['High']
+            prev_close = self.data.iloc[i-1]['Close']
+            prev_low = self.data.iloc[i-1]['Low']
+            pos_DM1 = max(high-prev_high, 0) if (high-prev_high) > (prev_low - low) else 0
+            neg_DM1 = max(prev_low - low, 0) if (prev_low - low) > (high - prev_high) else 0
+            TR = max(high-low, abs(high - prev_close), abs(low - prev_close))
+            TRs.append(TR)
+            pos_DMs.append(pos_DM1)
+            neg_DMs.append(neg_DM1)
+            if i > 13:
+                TR14 = sum(TRs[i-14:])
+                pos_DM14 = sum(pos_DMs[i-14:])
+                neg_Dm14 = sum(neg_DMs[i-14:])
+                pos_DI14 = 100*pos_DM14/TR14
+                neg_DI14 = 100*neg_DM14/TR14
+                DI14_diff = abs(pos_DI14 - neg_DI14)
+                DI14_sum = (pos_DI14 + neg_DI14)
+                DX = 100*DI14_diff/DI14_sum
+                DXs.append(DX)
+                if i > 26:
+                    ADX = np.mean(DXs[i-14:])
+        return ADX[-1]
+
+    def aroon_indicator(self, days_high = 25):
+        '''
+        days_high = 25
+        '''
+        data_len = self.data.shape[0]
+        prev_high_ix = np.argmax(self.data['High'][:days_high])
+        prev_high = max(self.data['High'][:days_high])
+        for i in xrange(days_high, data_len):
+            current_high_ix =  np.argmax(self.data['High'][:days_high])
+            if (self.data['High'][i] > prev_high) :
+                prev_high_ix = i
+                prev_high = self.data['High'][i]
+            elif i - prev_high_ix >= 25:
+                prev_high_ix += np.argmax(self.data['High'][i-24:i+1]) 
+                prev_high = max(self.data['High'][i-24:i+1])
+
+            aroon_up = ((days_high - (i-prev_high_ix))/25.)*100
+            aroon_down = 
 a = tech_analysis(symbol,prev_er_date, current_er_date)
 # print a.on_balance_volume()
 print a.accumulation_distribution_line()
