@@ -184,7 +184,7 @@ class tech_analysis(object):
         avg_losses = []
         RSs = []
         RSIs = []
-        for i in xrange(1,len(self.data.shape[0])):
+        for i in xrange(1,self.data.shape[0]):
             change = self.data['Close'][i] - self.data['Close'][i-1]
             if change < 0:
                 losses.append(abs(change))
@@ -214,7 +214,7 @@ class tech_analysis(object):
         K is multiplied by 100 to move the decimal point two places
         '''
         stochastic_oscillators = []
-        for i in xrange(period,len(self.data.shape[0])+1):
+        for i in xrange(period,self.data.shape[0]+1):
             high = max(slef.data['High'][i - 14, i])
             low = min(slef.data['Low'][i - 14, i])
             current_close = slef.data['Close'][i-1]
@@ -223,6 +223,47 @@ class tech_analysis(object):
 
         D = self.SMA_(period = 3, data = stochastic_oscillators)
         return stochastic_oscillators, D
+
+    def chaikin_money_flow(self, period = 20):
+        '''
+          1. Money Flow Multiplier = [(Close  -  Low) - (High - Close)] /(High - Low) 
+          2. Money Flow Volume = Money Flow Multiplier x Volume for the Period
+          3. 20-period CMF = 20-period Sum of Money Flow Volume / 20 period Sum of Volume 
+        '''
+        mf_vols =[]
+        CMFs = []
+        vols = []
+        for i in xrange(self.data.shape[0]):
+            mf_mult = ((self.data['Close'][i] - self.data['Low'][i]) - (self.data['High'][i] - self.data['Close'][i]))/(self.data['High'][i] - self.data['Low'][i])
+            mf_vol = mf_mult * self.data['Volume'][i]
+            vols.append(self.data['Volume'][i])
+            mf_vols.append(mf_vol)
+            if i >= 19:
+                cmf = sum(mf_vols[i-period+1:i+1])/sum(vols[i-period+1:i+1])
+                CMFs.append(cmf)
+        return CMFs
+
+    def price_relative(self,symbol = 'SPY'):
+        '''
+        Price Relative = Base Security / Comparative Security
+        Ratio Symbol Close = Close of First Symbol / Close of Second Symbol
+        Ratio Symbol Open  = Open of First Symbol / Close of Second Symbol
+        Ratio Symbol High  = High of First Symbol / Close of Second Symbol
+        Ratio Symbol Low   = Low of First Symbol / Close of Second Symbol
+        '''
+        second_data = web.DataReader(symbol, 'yahoo', self.prev_er_date, self.current_er_date)
+        changes = []
+        diffs = []
+        for i in xrange(1,self.data['Close']):
+            prev_price_rel = self.data['Close'][i-1] / second_data['Close'][i-1]
+            price_rel = self.data['Close'][i] / second_data['Close'][i]
+            change_price_rel = (price_rel - prev_price_rel)/prev_price_rel
+            change_data = (self.data['Close'][i] - self.data['Close'][i-1]) / self.data['Close'][i-1]
+            change_second_data = (second_data['Close'][i] - second_data['Close'][i-1]) / second_data['Close'][i-1]
+            diff = change_data - change_second_data
+            changes.append(change_price_rel)
+            diffs.append(diff)
+        return changes, diffs
 
 a = tech_analysis(symbol,prev_er_date, current_er_date)
 # print a.on_balance_volume()
