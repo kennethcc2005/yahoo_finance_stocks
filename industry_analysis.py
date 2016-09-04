@@ -22,6 +22,7 @@ Using AAPL as test
 symbol = 'AAPL'
 start = dt.datetime(2012, 1, 1)
 end = dt.date.today()
+df_er = pd.read_pickle('data/rev_full_history_er_date.pkl')
 df1 = pd.read_csv('data/companylist.csv')
 df2 = pd.read_csv('data/companylist1.csv')
 df3 = pd.read_csv('data/companylist2.csv')
@@ -64,7 +65,7 @@ for symbol in dfs.index:
         if  float(a) > symbol_market_cap:
             rank_sector += 1
         total_sector_mkt_cap += float(a)
-        
+
     avg_industry_mkt_cap = total_ind_mkt_cap/len(industry_symbols)
     avg_sector_mkt_cap = total_sector_mkt_cap/len(sector_symbols)
     avg_move_industry_er = None
