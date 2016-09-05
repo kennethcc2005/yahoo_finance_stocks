@@ -22,7 +22,7 @@ Using AAPL as test
 symbol = 'AAPL'
 start = dt.datetime(2012, 1, 1)
 end = dt.date.today()
-df_er = pd.read_pickle('data/rev_full_history_er_date.pkl')
+df_er = pd.read_pickle('data/adjusted_earning_report_hist.pkl')
 df1 = pd.read_csv('data/companylist.csv')
 df2 = pd.read_csv('data/companylist1.csv')
 df3 = pd.read_csv('data/companylist2.csv')
@@ -45,6 +45,7 @@ for symbol in dfs.index:
     rank_industry = 1
     rank_sector = 1
     for symbol_i in industry_symbols:
+        
         # c = web.DataReader(symbol, 'yahoo', start, end)
         a = dfs.loc[symbol_i]['MarketCap'].replace('$','').replace('M','')
         if 'B' in a:
