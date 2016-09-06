@@ -1,3 +1,6 @@
+'''
+Download Balance sheet, income statement, and cash flow for all stocks from google finance 
+'''
 import numpy as np 
 import pandas as pd 
 import json
@@ -152,23 +155,7 @@ for symbol in failed_list:
         print symbol, 'again not in google finance.'
 end_time = datetime.today()
 print str(end_time - begin_time)
-'''
-PCTY  not in google finance.
-PYDS  not in google finance.
-PYPL  not in google finance.
-PBBI  not in google finance.
-PCCC  not in google finance.
-PCMI  not in google finance.
-PCTI  not in google finance.
-PDCE  not in google finance.
-PDFS  not in google finance.
-PDLI  not in google finance.
-PDVW  not in google finance.
-SKIS  not in google finance.
-PGC  not in google finance.
-PEGA  not in google finance.
-PCO  not in google finance.
-'''
+
 df_bs_a.to_pickle('data/' + str(date.today())+'_'+'balance_sheet_annual.pkl')
 df_bs_q.to_pickle('data/' + str(date.today())+'_'+'balance_sheet_quarter.pkl')
 df_is_a.to_pickle('data/' + str(date.today())+'_'+'income_statement_annual.pkl')

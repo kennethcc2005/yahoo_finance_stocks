@@ -1,4 +1,6 @@
-
+'''
+Experisemental code for all purposes...
+'''
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd 
@@ -177,20 +179,26 @@ for i, symbol in enumerate(symbols):
         for ix, time in enumerate(earning_report['time']):
             
             if np64toDate(earning_report['er_date'].values[ix]) < d['Date'][0]:
-                print symbol, np64toDate(earning_report['er_date'].values[ix]), d['Date'][0]
+#                 print symbol, np64toDate(earning_report['er_date'].values[ix]), d['Date'][0]
                 drop_index.append(ix)
                 continue
             if len(d[d.Date == earning_report['er_date'].values[ix]]) == 0:
                 adj_day = 1
                 new_date = earning_report['er_date'].iloc[ix] - dt.timedelta(days=adj_day)
+                if len(d[d.Date == new_date]) == 0:
+                    drop_index.append(ix)
+                    continue
                 er_index = d[d.Date == new_date].index[0]
                 print symbol, 'no good er_date'
             else:
                 er_index = d[d.Date == earning_report['er_date'].values[ix]].index[0]
             if 'After' in time or 'pm' in time:
+                temp = earning_report['er_date'].iloc[ix]
+                if d.iloc[-1]['Date'] == temp:
+                    drop_index.append(ix)
+                    continue
                 after = er_index + 1
                 before = er_index
-                temp = earning_report['er_date'].iloc[ix]
                 adj_before_er_dates.append(d.iloc[before]['Date'])
                 adj_after_er_dates.append(d.iloc[after]['Date'])
                 correct_er_time.append(True)
@@ -201,6 +209,10 @@ for i, symbol in enumerate(symbols):
                 adj_after_er_dates.append(d.iloc[after]['Date'])
                 correct_er_time.append(True)
             else:
+                temp = earning_report['er_date'].iloc[ix]
+                if d.iloc[-1]['Date'] == temp:
+                    drop_index.append(ix)
+                    continue
                 after = er_index + 1
                 before = er_index -1
                 adj_before_er_dates.append(d.iloc[before]['Date'])

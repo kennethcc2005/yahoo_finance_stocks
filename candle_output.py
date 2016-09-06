@@ -1,3 +1,7 @@
+'''
+Candlestick pattern functions in class type. 
+Only need to run output function to build the dataframe for all patterns for one symbol.
+'''
 import numpy as np
 import pandas as pd
 import json

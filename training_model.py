@@ -14,7 +14,6 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics import make_scorer
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.externals import joblib
-
 '''
 Sample data from 2016-07-25, name may changes as date changes
 Using AAPL as test

@@ -1,3 +1,6 @@
+'''
+Candlestick pattern functions not in class type.
+'''
 import numpy as np 
 import pandas as pd 
 import json

@@ -1,3 +1,6 @@
+'''
+Get the stocks info from yahoo finance api.  Not used with limited data for now.
+'''
 import pandas as pd 
 import numpy as np 
 import requests

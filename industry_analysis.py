@@ -1,19 +1,10 @@
+'''
+Industry analysis with current symbol stand in sector and industry ranking and movements.
+'''
 import pandas as pd 
 import numpy as np 
 import datetime as dt
 import pandas.io.data as web
-from decimal import Decimal
-from td_sequence import TDSequence
-from candle_output import candle
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestRegressor as rfr
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
-from sklearn.grid_search import GridSearchCV
-from sklearn.cross_validation import train_test_split
-from sklearn.metrics import make_scorer
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.externals import joblib
 
 '''
 Sample data from 2016-07-25, name may changes as date changes
@@ -45,7 +36,6 @@ for symbol in dfs.index:
     rank_industry = 1
     rank_sector = 1
     for symbol_i in industry_symbols:
-        
         # c = web.DataReader(symbol, 'yahoo', start, end)
         a = dfs.loc[symbol_i]['MarketCap'].replace('$','').replace('M','')
         if 'B' in a:
